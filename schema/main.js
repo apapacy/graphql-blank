@@ -6,20 +6,8 @@ import {
   GraphQLList,
 } from 'graphql';
 
-import {
-  MongoClient
-} from 'mongodb';
 import assert from 'assert';
 import {promisay} from '../app/utils';
-const MONGO_URL = 'mongodb://localhost:27017/test';
-
-promisay(MongoClient, MongoClient.connect, MONGO_URL)
-.then(db => {
-  console.log('Connected to MongoDB server');
-  // The readline interface code
-}, err =>
-  console.log(err)
-);
 
 const roll = () => Math.floor(6 * Math.random()) + 1;
 
@@ -28,10 +16,14 @@ const queryType = new GraphQLObjectType({
   fields: {
     hello: {
       type: GraphQLString,
-      resolve: () => 'world'
+      resolve: (root, args, {db}) => {
+        console.log(db);
+        db.collection('users').insert({name: 'Joe'})
+        return 'world';
+      }
     },
     diceRoll: {
-      type: new GraphQLList(GraphQLInt),
+      type: new GraphQLList(GraphQLString),
       args: {
         count: {
           type: GraphQLInt,
@@ -41,7 +33,7 @@ const queryType = new GraphQLObjectType({
       resolve: (_, args) => {
         let rolls = [];
         for (let i = 0; i < args.count; i++) {
-          rolls.push(roll());
+          rolls.push(i + ': ' + roll());
         }
         return rolls;
       }
