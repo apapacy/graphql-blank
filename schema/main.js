@@ -9,6 +9,19 @@ import {
 import assert from 'assert';
 import {promisay} from '../app/utils';
 
+const QuoteType = new GraphQLObjectType({
+  name: 'Quote',
+  fields: {
+    id: {
+      type: GraphQLString,
+      resolve: obj => obj._id
+    },
+    text: { type: GraphQLString },
+    author: { type: GraphQLString }
+  }
+});
+
+
 const roll = () => Math.floor(6 * Math.random()) + 1;
 
 const queryType = new GraphQLObjectType({
@@ -16,9 +29,9 @@ const queryType = new GraphQLObjectType({
   fields: {
     hello: {
       type: GraphQLString,
-      resolve: (root, args, {db}) => {
-        console.log(db);
-        db.collection('users').insert({name: 'Joe'})
+      resolve: async (root, args, {db}) => {
+        const user = await db.collection('users').insert({name: 'Joe'});
+        console.log(user);
         return 'world';
       }
     },
@@ -37,6 +50,12 @@ const queryType = new GraphQLObjectType({
         }
         return rolls;
       }
+    },
+    allQuotes: {
+      type: new GraphQLList(QuoteType),
+      description: 'A list of the quotes in the database',
+      resolve: (_, args, { db }) =>
+        db.collection('quotes').find().toArray()
     },
   },
 });
