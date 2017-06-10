@@ -1,5 +1,11 @@
 import React from 'react';
+import Relay from 'react-relay';
+import PropTypes from 'prop-types';
+
 class Quote extends React.Component {
+  static propTypes = {
+    quote: PropTypes.object
+  };
   render() {
     return (
       <blockquote>
@@ -9,4 +15,8 @@ class Quote extends React.Component {
     );
   }
 }
-export default Quote;
+const QuoteContainer =  Relay.createContainer(Quote, {
+  fragments: {}
+});
+
+export default QuoteContainer;

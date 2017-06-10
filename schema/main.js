@@ -22,15 +22,18 @@ const QuoteType = new GraphQLObjectType({
 });
 
 
-const roll = () => Math.floor(6 * Math.random()) + 1;
+function roll() {
+  return Math.floor(6 * Math.random()) + 1;
+}
 
 const queryType = new GraphQLObjectType({
   name: 'RootQuery',
   fields: {
     hello: {
       type: GraphQLString,
-      resolve: async (root, args, {db}) => {
-        const user = await db.collection('users').insert({name: 'Joe'});
+      resolve: async (root, args, { db }) => {
+        const user = await db.collection('users').insert({ name: 'Joe' });
+
         console.log(user);
         return 'world';
       }
@@ -40,13 +43,14 @@ const queryType = new GraphQLObjectType({
       args: {
         count: {
           type: GraphQLInt,
-          defaultValue: 2,
-        },
+          defaultValue: 2
+        }
       },
       resolve: (_, args) => {
-        let rolls = [];
+        const rolls = [];
+
         for (let i = 0; i < args.count; i++) {
-          rolls.push(i + ': ' + roll());
+          rolls.push(`${i}: ${roll()}`);
         }
         return rolls;
       }
