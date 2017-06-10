@@ -19,7 +19,7 @@ class QuotesLibrary extends React.Component {
 
   render() {
     return (
-      <div className="quotes-list">
+      <div className='quotes-list'>
         {this.state.allQuotes.map(quote =>
           <Quote key={quote.id} quote={quote} />
         )}
